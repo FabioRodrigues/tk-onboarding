@@ -10,5 +10,5 @@ class RecipeModelTest(TestCase):
         bean = models.Ingredient.objects.create(name="bean", recipe=recipe)
 
         print(recipe.id)
-        print(recipe.ingredient_set.count())
-        print(recipe.ingredient_set.filter(name="bean")[0].name)
+        print(recipe.ingredients.count())
+        print(recipe.ingredients.filter(name="bean")[0].name)
