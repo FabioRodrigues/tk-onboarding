@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
 
-from .serializers import RecipeSerializer, IngredientSerializer, RecipeNestedSerializer, RestfulIngredientSerializer
+from .serializers import RestfulRecipeSerializer, RestfulIngredientSerializer, RecipeSerializer
 from core.models import Recipe, Ingredient
 
 
-class IngredientViewSet(NestedViewSetMixin, ModelViewSet):
+class RestfulIngredientViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = RestfulIngredientSerializer
     queryset = Ingredient.objects.all()
 
@@ -27,13 +27,13 @@ class IngredientViewSet(NestedViewSetMixin, ModelViewSet):
         serializer.save(recipe_id=recipe_id)
 
 
-class RecipeViewSet(NestedViewSetMixin, ModelViewSet):
-    serializer_class = RecipeSerializer
+class RestfulRecipeViewSet(NestedViewSetMixin, ModelViewSet):
+    serializer_class = RestfulRecipeSerializer
     queryset = Recipe.objects.all()
 
 
-class RecipeNestedViewSet(ModelViewSet):
-    serializer_class = RecipeNestedSerializer
+class RecipeViewSet(ModelViewSet):
+    serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
         
     def perform_create(self, serializer):

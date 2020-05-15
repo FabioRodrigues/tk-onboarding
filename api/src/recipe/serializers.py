@@ -17,14 +17,14 @@ class RestfulIngredientSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)        
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RestfulRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name')
         read_only_fields = ('id',)
 
 
-class RecipeNestedSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(
         many=True
     )

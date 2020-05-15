@@ -25,7 +25,6 @@ class TestRecipe(TestCase):
         payload = {'name': "pad-thai", 'ingredients':[{'name':'egg'}]}
 
         resp = self.client.post(URL_RECIPES_LIST, payload,format='json')
-        print(resp.data)
 
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 

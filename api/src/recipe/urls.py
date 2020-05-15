@@ -9,12 +9,12 @@ from . import views
 '''
 router = ExtendedSimpleRouter(trailing_slash=False)
 (
-    router.register('restful_recipes', views.RecipeViewSet, basename='recipe')
+    router.register('restful_recipes', views.RestfulRecipeViewSet, basename='recipe')
     .register('ingredients',
-              views.IngredientViewSet,
+              views.RestfulIngredientViewSet,
               basename='recipe-ingredients',
               parents_query_lookups=['recipe'])
 )
-router.register('recipes', views.RecipeNestedViewSet)
+router.register('recipes', views.RecipeViewSet)
 
 urlpatterns = router.urls
