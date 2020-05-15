@@ -3,13 +3,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from rest_framework import status
+from django.db import transaction
 
-from .serializers import RecipeSerializer, IngredientSerializer
+from .serializers import RecipeSerializer, IngredientSerializer, RecipeNestedSerializer, RestfulIngredientSerializer
 from core.models import Recipe, Ingredient
 
 
 class IngredientViewSet(NestedViewSetMixin, ModelViewSet):
-    serializer_class = IngredientSerializer
+    serializer_class = RestfulIngredientSerializer
     queryset = Ingredient.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -29,3 +30,16 @@ class IngredientViewSet(NestedViewSetMixin, ModelViewSet):
 class RecipeViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
+
+
+class RecipeNestedViewSet(ModelViewSet):
+    serializer_class = RecipeNestedSerializer
+    queryset = Recipe.objects.all()
+        
+    def perform_create(self, serializer):
+        with transaction.atomic():
+            return super().perform_create(serializer)
+
+    def perform_update(self, serializer):
+        with transaction.atomic():
+            return super().perform_update(serializer)

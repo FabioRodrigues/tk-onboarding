@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 
-URL_RECIPES_LIST = '/recipes'
+URL_RECIPES_LIST = '/restful_recipes'
 
 
 class TestIngredient(TestCase):
