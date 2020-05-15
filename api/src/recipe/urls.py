@@ -1,12 +1,13 @@
-from django.urls import include, path
-from django.conf.urls import include, url
-from rest_framework import routers
 from rest_framework_extensions.routers import ExtendedSimpleRouter
 
 from . import views
 
 
-router = ExtendedSimpleRouter()
+'''
+    this router creates the sub-resource ingredient to the recipe
+    something like /recipe/{recipe_id}/ingredients
+'''
+router = ExtendedSimpleRouter(trailing_slash=False)
 (
     router.register('recipes', views.RecipeViewSet, basename='recipe')
     .register('ingredients',

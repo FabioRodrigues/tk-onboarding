@@ -8,4 +8,3 @@ class Recipe(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=200)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="ingredients")
-
