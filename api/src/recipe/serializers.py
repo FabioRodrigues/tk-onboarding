@@ -9,25 +9,9 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('name',)
         read_only_fields = ('id',)
 
-class RestfulIngredientSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Ingredient
-        fields = ('name', 'id')
-        read_only_fields = ('id',)        
-
-
-class RestfulRecipeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name')
-        read_only_fields = ('id',)
-
 
 class RecipeSerializer(serializers.ModelSerializer):
-    ingredients = IngredientSerializer(
-        many=True
-    )
+    ingredients = IngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
@@ -52,3 +36,18 @@ class RecipeSerializer(serializers.ModelSerializer):
             Ingredient.objects.create(recipe=instance, **i)
     
         return instance
+
+
+class RestfulIngredientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ingredient
+        fields = ('name', 'id')
+        read_only_fields = ('id',)        
+
+
+class RestfulRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name')
+        read_only_fields = ('id',)
