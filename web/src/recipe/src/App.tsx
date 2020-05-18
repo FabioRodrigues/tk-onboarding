@@ -8,40 +8,40 @@ import {
 } from 'react-router-dom';
 import About from './pages/About/About'
 import Index from './pages/Index/Index'
+import RecipeDetail from './pages/RecipeDetail/RecipeDetail'
+import RecipesList from './pages/RecipesList/RecipesList';
 
 
 function App() {
   return (
     <Router>
-    <div>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/about">About</Link>
-        </li>
-      </ul>
+      <div>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/about">About</Link>
+          </li>
+          <li>
+            <Link to="/recipe-detail">Detail</Link>
+          </li>
+          <li>
+          <Link to="/recipes">List</Link>
+          </li>
+        </ul>
 
-      <hr />
-
-      {/*
-        A <Switch> looks through all its children <Route>
-        elements and renders the first one whose path
-        matches the current URL. Use a <Switch> any time
-        you have multiple routes, but you want only one
-        of them to render at a time
-      */}
-      <Switch>
-        <Route exact path="/">
-          <Index />
-        </Route>
-        <Route path="/about">
-          <About />
-        </Route>
-      </Switch>
-    </div>
-  </Router>
+        <hr />
+        <div className="container">
+          <Switch>
+            <Route exact path="/" component={Index} />
+            <Route path="/about" component={About} />
+            <Route path="/recipe-detail" component={RecipeDetail} />
+            <Route path="/recipes" component={RecipesList} />
+          </Switch>
+        </div>
+      </div>
+    </Router>
   );
 }
 
