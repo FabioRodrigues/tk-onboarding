@@ -60,7 +60,7 @@ interface RecipePayload {
     id: number,
     name: string,
     description: string,
-    ingredients: RecipePayloadIngredient[]
+    ingredients: Array<RecipePayloadIngredient>
 }
 
 interface RecipePayloadIngredient {
@@ -90,7 +90,6 @@ function RecipeCreate(req: any) {
         const fetchRecipe = () => {
             axios.get(`${ApiConfigs.BaseUrl}/recipes/${id}`)
                 .then((res: Response) => {
-                    console.log(res)
                     setrecipeName(res.data.name);
                     setrecipeDescription(res.data.description);
                     setIngredients(res.data.ingredients.map((item) => item.name));
@@ -166,8 +165,8 @@ function RecipeCreate(req: any) {
                                         <h2>Recipe
                                             {
                                                 (!editEnabled)
-                                                ? <LinkButton onClick={actions.toggleEditable}>( edit )</LinkButton >
-                                                : <LinkButton onClick={actions.toggleEditable}>( lock )</LinkButton > 
+                                                ? <LinkButton onClick={actions.toggleEditable} data-testid="edit">( edit )</LinkButton >
+                                                : <LinkButton onClick={actions.toggleEditable} data-testid="lock">( lock )</LinkButton > 
                                             }
                                             </h2>
                                         
@@ -181,7 +180,7 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="name">
                                 Name:
                             </FormLabel>
-                            <TextBox type="text" id="name" value={recipeName} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
+                            <TextBox data-testid="name" type="text" id="name" value={recipeName || ''} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                     <StyledFlex.Item>
@@ -189,7 +188,7 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="description">
                                 Description:
                             </FormLabel>
-                            <TextBox type="text" id="description" value={recipeDescription} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
+                            <TextBox data-testid="description" type="text" id="description" value={recipeDescription || ''} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                 </StyledFlex.Row>
@@ -215,8 +214,8 @@ function RecipeCreate(req: any) {
                                 <StyledFlex.Item>
                                     <List>
                                         {ingredients.map((item, index) => (
-                                            <ListItem>- {item} {(!isEdit || editEnabled)&&
-                                                <LinkButton onClick={() => actions.deleteIngredient(index)}>
+                                            <ListItem key={index}>- {item} {(!isEdit || editEnabled)&&
+                                                <LinkButton data-testid={`remove-ingredient-${index}`} onClick={() => actions.deleteIngredient(index)}>
                                                     <FontAwesomeIcon icon={faTrash} />
                                                 </LinkButton>
                                             }
@@ -236,7 +235,7 @@ function RecipeCreate(req: any) {
                         </Link>
                         {
                             (!isEdit || editEnabled)&&
-                                <Button.Primary type="submit" >Save</Button.Primary>
+                                <Button.Primary data-testid="save-button" type="submit" >Save</Button.Primary>
                         }
                     </StyledFlex.Item>
                 </StyledFlex.Row>

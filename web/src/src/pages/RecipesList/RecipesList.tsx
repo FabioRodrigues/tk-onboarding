@@ -11,7 +11,7 @@ const Center = styled.div`
     text-align: center;
 `
 
-interface Teste{
+interface Recipe{
     id: number,
     name: string,
     description: string
@@ -19,11 +19,13 @@ interface Teste{
 }
 
 function RecipesList() {
-    const [recipes, setRecipes] = useState(new Array<Teste>())
+    const [recipes, setRecipes] = useState(new Array<Recipe>())
     useEffect(()=>{
         const fetchData = () => {
             axios.get(`${ApiConfigs.BaseUrl}/recipes`)
-            .then((res)=> setRecipes(res.data))
+            .then((res)=> {
+                setRecipes(res.data);
+            } )
             .catch((err)=>{
                 alert('couldnt fetch recipes. See the console for details');
                 console.log(err);
@@ -55,10 +57,10 @@ function RecipesList() {
                         <RespTable.Column>Description</RespTable.Column>
                         <RespTable.Column></RespTable.Column>
                     </RespTable.Header>
-                    <RespTable.Body>
+                    <RespTable.Body id="teste">
                         {recipes.map((item) => {
                             return (
-                                <RespTable.Row>
+                                <RespTable.Row key={item.id}>
                                     <RespTable.Column>
                                         <Link to={`/recipe-detail/${item.id}`}>
                                             {item.name}
@@ -75,7 +77,7 @@ function RecipesList() {
             <StyledFlex.Row>
                 <StyledFlex.Item>
                     <Link to="/recipe-create">
-                        <Button.Primary>
+                        <Button.Primary data-testid="new-button">
                             New
                         </Button.Primary>
                     </Link>

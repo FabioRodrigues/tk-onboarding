@@ -6,3 +6,6 @@ build:
 
 publish: 
 	npm run-script build
+
+test:
+	npm run-script test
