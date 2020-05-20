@@ -22,7 +22,7 @@ function RecipesList() {
     const [recipes, setRecipes] = useState(new Array<Teste>())
     useEffect(()=>{
         const fetchData = () => {
-            axios.get('${ApiConfigs.BaseUrl}/recipes')
+            axios.get(`${ApiConfigs.BaseUrl}/recipes`)
             .then((res)=> setRecipes(res.data))
             .catch((err)=>{
                 console.log(err)

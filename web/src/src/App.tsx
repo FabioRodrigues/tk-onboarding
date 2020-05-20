@@ -4,7 +4,6 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
-import RecipeDetail from './pages/RecipeDetail/RecipeDetail'
 import RecipesList from './pages/RecipesList/RecipesList'
 import RecipeCreate from './pages/RecipeCreate/RecipeCreate'
 import {StyledFlex } from './styled/Flex/Flex'
@@ -25,7 +24,6 @@ function App() {
             <Switch>
               <Route exact path="/" component={RecipesList} />
               <Route path="/recipe-detail/:id" component={RecipeCreate} />
-              <Route path="/recipes" component={RecipesList} />
               <Route path="/recipe-create" component={RecipeCreate} />
             </Switch>
             </CardMain>

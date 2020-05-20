@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, Redirect } from 'react-router-dom'
 import { StyledFlex } from '../../styled/Flex/Flex'
 import { Button } from '../../styled/Button/Button'
 import styled from 'styled-components'
@@ -124,20 +124,18 @@ function RecipeCreate(req: any) {
         },
         create: (payload: any) => {
             axios.post(`${ApiConfigs.BaseUrl}/recipes`, payload)
-                .then((resp) => {
-                    console.log(resp);
-                    history.goBack()
+                .then(() => {
+                    history.push('/');
                 }).catch((err) => {
-                    console.log(err);
+                    alert(err);
                 });
         },
         edit: (payload: any) => {
             axios.patch(`${ApiConfigs.BaseUrl}/recipes/${recipeId}`, payload)
-                .then((resp) => {
-                    console.log(resp);
-                    history.goBack()
+                .then(() => {
+                    history.push('/');
                 }).catch((err) => {
-                    console.log(err);
+                    alert(err);
                 })
         },
         toggleEditable: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -233,7 +231,7 @@ function RecipeCreate(req: any) {
                 </StyledFlex.Row>
                 <StyledFlex.Row>
                     <StyledFlex.Item>
-                        <Link to="/recipes">
+                        <Link to="/">
                             <Button.Secondary>Back</Button.Secondary>
                         </Link>
                         {
