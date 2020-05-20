@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+    api:
+      build:
+        context: api/src/
+      ports:
+        - "8000:8000"
+
+    web:
+      build: web/src
+      environment:
+        - REACT_APP_API_BASE_URL=http://google.com
+      ports: 
+        - "80:80"
+      depends_on:
+        - api
+    
