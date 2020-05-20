@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 ### Testing:
 
 ```bash
-make tests
+make test
 ```
 ### Creating migrations:
 
