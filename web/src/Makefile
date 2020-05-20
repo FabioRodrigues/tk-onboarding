@@ -3,3 +3,6 @@ run:
 
 build:
 	rm -rf node_modules && npm install
+
+publish: 
+	npm run-script build

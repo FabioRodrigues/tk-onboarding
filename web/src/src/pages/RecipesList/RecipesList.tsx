@@ -5,6 +5,7 @@ import { RespTable } from '../../styled/Table/Table'
 import { StyledFlex } from '../../styled/Flex/Flex'
 import { Link } from 'react-router-dom'
 import { Button } from '../../styled/Button/Button'
+import {ApiConfigs} from '../../config/ApiConfigs'
 
 const Center = styled.div`
     text-align: center;
@@ -21,7 +22,7 @@ function RecipesList() {
     const [recipes, setRecipes] = useState(new Array<Teste>())
     useEffect(()=>{
         const fetchData = () => {
-            axios.get('http://localhost:8000/recipes')
+            axios.get('${ApiConfigs.BaseUrl}/recipes')
             .then((res)=> setRecipes(res.data))
             .catch((err)=>{
                 console.log(err)
@@ -33,7 +34,7 @@ function RecipesList() {
     const actions = {
         deleteRecipe: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
             e.preventDefault();
-            axios.delete(`http://localhost:8000/recipes/${id}`)
+            axios.delete(`${ApiConfigs.BaseUrl}/recipes/${id}`)
             .then((res) => {
                 setRecipes(recipes.filter((i)=> i.id !== id));
             })
