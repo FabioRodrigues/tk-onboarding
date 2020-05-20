@@ -58,7 +58,7 @@ function RecipesList() {
                             return (
                                 <RespTable.Row>
                                     <RespTable.Column>
-                                        <Link to="/recipes/1">
+                                        <Link to={`/recipe-detail/${item.id}`}>
                                             {item.name}
                                         </Link>
                                     </RespTable.Column>
@@ -70,7 +70,7 @@ function RecipesList() {
                     </RespTable.Body>
                 </RespTable.Table>
             </Center>
-            <StyledFlex.RowRight>
+            <StyledFlex.Row>
                 <StyledFlex.Item>
                     <Link to="/recipe-create">
                         <Button.Primary>
@@ -78,7 +78,7 @@ function RecipesList() {
                         </Button.Primary>
                     </Link>
                 </StyledFlex.Item>
-            </StyledFlex.RowRight>
+            </StyledFlex.Row>
         </StyledFlex.Container>
     )
 

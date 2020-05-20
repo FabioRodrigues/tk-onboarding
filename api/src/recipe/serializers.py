@@ -34,6 +34,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         for i in ingredients:
             Ingredient.objects.create(recipe=instance, **i)
+        
+        instance.name = validated_data.pop('name')
+        instance.description = validated_data.pop('description')
+
+        instance.save()
     
         return instance
 

@@ -9,24 +9,28 @@ import RecipesList from './pages/RecipesList/RecipesList'
 import RecipeCreate from './pages/RecipeCreate/RecipeCreate'
 import {StyledFlex } from './styled/Flex/Flex'
 
+import styled from 'styled-components'
+
+const CardMain = styled(StyledFlex.Card)`
+  margin-top: 50px;
+  padding:10px 0;
+`
 
 function App() {
   return (
     <Router>
-      <div>
         <StyledFlex.Row>
           <StyledFlex.Item>
-            <StyledFlex.Card>
+            <CardMain>
             <Switch>
               <Route exact path="/" component={RecipesList} />
-              <Route path="/recipe-detail/:id" component={RecipeDetail} />
+              <Route path="/recipe-detail/:id" component={RecipeCreate} />
               <Route path="/recipes" component={RecipesList} />
               <Route path="/recipe-create" component={RecipeCreate} />
             </Switch>
-            </StyledFlex.Card>
+            </CardMain>
           </StyledFlex.Item>
         </StyledFlex.Row>
-      </div>
     </Router >
   );
 }
