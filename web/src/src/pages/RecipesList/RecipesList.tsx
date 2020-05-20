@@ -25,7 +25,8 @@ function RecipesList() {
             axios.get(`${ApiConfigs.BaseUrl}/recipes`)
             .then((res)=> setRecipes(res.data))
             .catch((err)=>{
-                console.log(err)
+                alert('couldnt fetch recipes. See the console for details');
+                console.log(err);
             });
         }
         fetchData();

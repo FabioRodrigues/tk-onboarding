@@ -1,3 +1,3 @@
 export const ApiConfigs = {
-    BaseUrl: 'http://localhost:8000'
+    BaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'
 };

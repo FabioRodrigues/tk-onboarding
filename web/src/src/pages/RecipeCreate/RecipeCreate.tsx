@@ -126,17 +126,13 @@ function RecipeCreate(req: any) {
             axios.post(`${ApiConfigs.BaseUrl}/recipes`, payload)
                 .then(() => {
                     history.push('/');
-                }).catch((err) => {
-                    alert(err);
-                });
+                }).catch(actions.handleError);
         },
         edit: (payload: any) => {
             axios.patch(`${ApiConfigs.BaseUrl}/recipes/${recipeId}`, payload)
                 .then(() => {
                     history.push('/');
-                }).catch((err) => {
-                    alert(err);
-                })
+                }).catch(actions.handleError);
         },
         toggleEditable: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.preventDefault();
@@ -151,6 +147,10 @@ function RecipeCreate(req: any) {
         },
         deleteIngredient: (index: any) => {
             setIngredients(ingredients.filter((_, i) =>  i !== index))
+        },
+        handleError: (err: any) => {
+            alert('failed to fetch or save data. Please see console for details.')
+            console.log(err);
         }
     }
 
