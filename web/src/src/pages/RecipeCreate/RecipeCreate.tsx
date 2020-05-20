@@ -6,6 +6,7 @@ import { Button } from '../../styled/Button/Button'
 import styled from 'styled-components'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import {ApiConfigs} from '../../config/ApiConfigs'
 
 const ContainerIngredients = styled.div`
     border: none;
@@ -87,7 +88,7 @@ function RecipeCreate(req: any) {
 
     useEffect(() => {
         const fetchRecipe = () => {
-            axios.get(`http://localhost:8000/recipes/${id}`)
+            axios.get(`${ApiConfigs.BaseUrl}/recipes/${id}`)
                 .then((res: Response) => {
                     console.log(res)
                     setrecipeName(res.data.name);
@@ -122,7 +123,7 @@ function RecipeCreate(req: any) {
             actions.create(payload);
         },
         create: (payload: any) => {
-            axios.post('http://localhost:8000/recipes', payload)
+            axios.post(`${ApiConfigs.BaseUrl}/recipes`, payload)
                 .then((resp) => {
                     console.log(resp);
                     history.goBack()
@@ -131,7 +132,7 @@ function RecipeCreate(req: any) {
                 });
         },
         edit: (payload: any) => {
-            axios.patch(`http://localhost:8000/recipes/${recipeId}`, payload)
+            axios.patch(`${ApiConfigs.BaseUrl}/recipes/${recipeId}`, payload)
                 .then((resp) => {
                     console.log(resp);
                     history.goBack()
