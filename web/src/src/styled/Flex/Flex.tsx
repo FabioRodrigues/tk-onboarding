@@ -24,14 +24,4 @@ const Item = styled.div`
     margin: 5px;
 `
 
-
-const Card = styled.div`
-    border-radius: 5px;
-    width: 50vw;
-    min-height: 60vh;
-    min-width: 90vw;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-`
-
-export const StyledFlex =  {Row, RowRight, Item, Card, Container};
+export const StyledFlex =  {Row, RowRight, Item, Container};

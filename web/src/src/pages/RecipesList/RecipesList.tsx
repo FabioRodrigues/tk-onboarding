@@ -1,17 +1,14 @@
-import React, {  useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { RespTable } from '../../styled/Table/Table'
-import { StyledFlex } from '../../styled/Flex/Flex'
+import { RespTable, StyledFlex, Button } from '../../styled'
 import { Link } from 'react-router-dom'
-import { Button } from '../../styled/Button/Button'
-import {ApiConfigs} from '../../config/ApiConfigs'
+import { RecipeService } from '../../recipe-service/recipe-service'
 
 const Center = styled.div`
     text-align: center;
 `
 
-interface Recipe{
+interface Recipe {
     id: number,
     name: string,
     description: string
@@ -20,30 +17,32 @@ interface Recipe{
 
 function RecipesList() {
     const [recipes, setRecipes] = useState(new Array<Recipe>())
-    useEffect(()=>{
-        const fetchData = () => {
-            axios.get(`${ApiConfigs.BaseUrl}/recipes`)
-            .then((res)=> {
-                setRecipes(res.data);
-            } )
-            .catch((err)=>{
-                alert('couldnt fetch recipes. See the console for details');
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const recipes = await RecipeService.list();
+                setRecipes(recipes);
+            }
+            catch (err) {
+                //just to simplify error treatment
                 console.log(err);
-            });
+            }
         }
+
         fetchData();
     }, []);
 
     const actions = {
-        deleteRecipe: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        deleteRecipe: async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
             e.preventDefault();
-            axios.delete(`${ApiConfigs.BaseUrl}/recipes/${id}`)
-            .then((res) => {
-                setRecipes(recipes.filter((i)=> i.id !== id));
-            })
-            .catch((err) => {
+            try {
+                if (await RecipeService.remove(id)) {
+                    setRecipes(recipes.filter((i) => i.id !== id));
+                }
+            } catch (err) {
+                //just to simplify error treatment
                 console.log(err);
-            })
+            }
         }
     }
 
