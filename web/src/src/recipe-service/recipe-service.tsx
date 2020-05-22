@@ -14,7 +14,7 @@ export interface RecipePayloadIngredient {
 
 const list = async (): Promise<Array<RecipePayload>> => {
     let result = await axios.get(`${ApiConfigs.BaseUrl}/recipes`)
-    if(result.status != 200){
+    if(result.status !== 200){
         handleError(result.data);
         return Promise.reject();
     }
@@ -24,7 +24,7 @@ const list = async (): Promise<Array<RecipePayload>> => {
 
 const get = async (id: number): Promise<RecipePayload> => {
     let result = await axios.get(`${ApiConfigs.BaseUrl}/recipes/${id}`)
-    if(result.status != 200){
+    if(result.status !== 200){
         handleError(result.data);
         return Promise.reject();
     }
@@ -43,8 +43,8 @@ const remove = async (id: any): Promise<boolean> => {
 };
 
 const save = async(payload: any): Promise<any> =>{
-    let result = await axios.post(`${ApiConfigs.BaseUrl}/recipes`, payload);
-    if(result.status != 201){
+    let result = await axios.post(`${ApiConfigs.BaseUrl}/recipes/`, payload);
+    if(result.status !== 201){
         handleError(result.data);
         return Promise.reject();
     }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useHistory, Redirect } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { StyledFlex, Button } from '../../styled'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import { ApiConfigs } from '../../config/ApiConfigs'
 import { RecipeService } from '../../recipe-service/recipe-service'
 
 const ContainerIngredients = styled.div`
@@ -58,8 +57,8 @@ const LinkButton = styled.button`
 function RecipeCreate(req: any) {
     const id = req.match.params.id;
 
-    const [isEdit, setIsEdit] = useState(id !== null && id !== undefined)
-    const [recipeId, setRecipeId] = useState(id)
+    const [isEdit] = useState(id !== null && id !== undefined)
+    const [recipeId] = useState(id)
     const [editEnabled, setEditEnabled] = useState(false)
 
 
@@ -71,7 +70,7 @@ function RecipeCreate(req: any) {
     const history = useHistory()
 
     useEffect(() => {
-        const fetchRecipe = async () => {
+        const fetchRecipe = async (id: number, isEdit: boolean) => {
             try {
                 let recipe = await RecipeService.get(id)
                 if (recipe) {
@@ -86,67 +85,70 @@ function RecipeCreate(req: any) {
 
         };
 
-        if (isEdit) fetchRecipe();
-    }, [])
+        fetchRecipe(id, isEdit);
+    }, [id, isEdit]);
 
-    const actions = {
-        addIngredient: () => {
-            if (ingredientName === "") return;
+    const addIngredient = () => {
+        if (ingredientName === "") return;
 
-            setIngredients([...ingredients, ingredientName]);
-            setIngredientName("");
-        },
-        submit: (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            let payload = {
-                name: recipeName,
-                description: recipeDescription,
-                ingredients: ingredients.map((i) => { return { name: i } })
+        setIngredients([...ingredients, ingredientName]);
+        setIngredientName("");
+    };
+
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        let payload = {
+            name: recipeName,
+            description: recipeDescription,
+            ingredients: ingredients.map((i) => { return { name: i } })
+        }
+
+        try {
+
+            if (isEdit) {
+                edit(recipeId, payload);
+                return;
             }
-            try {
 
-                if (isEdit) {
-                    actions.edit(id, payload);
-                    return;
-                }
-
-                actions.create(payload);
-            } catch (err) {
-                //just to simplify error treatment
-                console.log(err);
-            }
-        },
-        create: async (payload: any) => {
-            let result = await RecipeService.save(payload)
-            if (result) history.push('/');
-        },
-        edit: async (recipeId: any, payload: any) => {
-            let result = await RecipeService.update(recipeId, payload)
-            if (result) history.push('/');
-        },
-        toggleEditable: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            e.preventDefault();
-            setEditEnabled(!editEnabled);
-        },
-        keyDownIngredient: (e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                actions.addIngredient();
-                return false;
-            }
-        },
-        deleteIngredient: (index: any) => {
-            setIngredients(ingredients.filter((_, i) => i !== index))
-        },
-        handleError: (err: any) => {
-            alert('failed to fetch or save data. Please see console for details.')
+            create(payload);
+        } catch (err) {
+            //just to simplify error treatment
             console.log(err);
         }
     }
+    
+    const create = async (payload: any) => {
+        let result = await RecipeService.save(payload)
+        if (result) history.push('/');
+    }
+
+    const edit = async (recipeId: any, payload: any) => {
+        let result = await RecipeService.update(recipeId, payload)
+        if (result) history.push('/');
+    }
+
+
+    const toggleEditable = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        setEditEnabled(!editEnabled);
+    }
+
+    const keyDownIngredient = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addIngredient();
+            return false;
+        }
+    }
+
+    const deleteIngredient = (index: any) => {
+        setIngredients(ingredients.filter((_, i) => i !== index))
+    }
+
 
     return (
         <StyledFlex.Container>
-            <form onSubmit={actions.submit}>
+            <form onSubmit={submit}>
                 <StyledFlex.Row>
 
                     {
@@ -156,8 +158,8 @@ function RecipeCreate(req: any) {
                                 <h2>Recipe
                                             {
                                         (!editEnabled)
-                                            ? <LinkButton onClick={actions.toggleEditable} data-testid="edit">( edit )</LinkButton >
-                                            : <LinkButton onClick={actions.toggleEditable} data-testid="lock">( lock )</LinkButton >
+                                            ? <LinkButton onClick={toggleEditable} data-testid="edit">( edit )</LinkButton >
+                                            : <LinkButton onClick={toggleEditable} data-testid="lock">( lock )</LinkButton >
                                     }
                                 </h2>
 
@@ -190,7 +192,7 @@ function RecipeCreate(req: any) {
                             <FormLabel>
                                 Name:
                                         <TextBox type="text" name="name" value={ingredientName}
-                                    onKeyDown={actions.keyDownIngredient}
+                                    onKeyDown={keyDownIngredient}
                                     onChange={(e) => setIngredientName(e.target.value)} placeholder="Ingredient name ( type <ENTER> to add )" />
                             </FormLabel>
                         </IngredientItem>
@@ -206,7 +208,7 @@ function RecipeCreate(req: any) {
                                     <List>
                                         {ingredients.map((item, index) => (
                                             <ListItem key={index}>- {item} {(!isEdit || editEnabled) &&
-                                                <LinkButton data-testid={`remove-ingredient-${index}`} onClick={() => actions.deleteIngredient(index)}>
+                                                <LinkButton data-testid={`remove-ingredient-${index}`} onClick={() => deleteIngredient(index)}>
                                                     <FontAwesomeIcon icon={faTrash} />
                                                 </LinkButton>
                                             }

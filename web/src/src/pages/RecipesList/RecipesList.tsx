@@ -32,17 +32,15 @@ function RecipesList() {
         fetchData();
     }, []);
 
-    const actions = {
-        deleteRecipe: async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
-            e.preventDefault();
-            try {
-                if (await RecipeService.remove(id)) {
-                    setRecipes(recipes.filter((i) => i.id !== id));
-                }
-            } catch (err) {
-                //just to simplify error treatment
-                console.log(err);
+    const deleteRecipe = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        e.preventDefault();
+        try {
+            if (await RecipeService.remove(id)) {
+                setRecipes(recipes.filter((i) => i.id !== id));
             }
+        } catch (err) {
+            //just to simplify error treatment
+            console.log(err);
         }
     }
 
@@ -66,7 +64,7 @@ function RecipesList() {
                                         </Link>
                                     </RespTable.Column>
                                     <RespTable.Column>{item.description}</RespTable.Column>
-                                    <RespTable.Column><Button.Delete onClick={(e) => actions.deleteRecipe(e, item.id)}>Delete</Button.Delete></RespTable.Column>
+                                    <RespTable.Column><Button.Delete onClick={(e) => deleteRecipe(e, item.id)}>Delete</Button.Delete></RespTable.Column>
                                 </RespTable.Row>
                             )
                         })}

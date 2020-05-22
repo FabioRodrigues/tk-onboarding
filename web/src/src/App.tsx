@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import RecipesList from './pages/RecipesList/RecipesList'
 import RecipeCreate from './pages/RecipeCreate/RecipeCreate'
-import {StyledFlex} from './styled'
 import styled from 'styled-components'
 
 const Card = styled.div`
