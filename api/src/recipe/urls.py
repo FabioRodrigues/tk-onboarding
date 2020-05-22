@@ -15,6 +15,6 @@ router = ExtendedSimpleRouter(trailing_slash=False)
               basename='recipe-ingredients',
               parents_query_lookups=['recipe'])
 )
-router.register('recipes', views.RecipeViewSet)
+router.register('recipes/', views.RecipeViewSet)
 
 urlpatterns = router.urls
