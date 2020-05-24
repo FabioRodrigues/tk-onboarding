@@ -55,7 +55,7 @@ function RecipesList() {
                         <RespTable.Column></RespTable.Column>
                     </RespTable.Header>
                     <RespTable.Body id="teste">
-                        {recipes.map((item) => {
+                        {recipes.length > 0  ? recipes.map((item) => {
                             return (
                                 <RespTable.Row key={item.id}>
                                     <RespTable.Column>
@@ -67,7 +67,9 @@ function RecipesList() {
                                     <RespTable.Column><Button.Delete onClick={(e) => deleteRecipe(e, item.id)}>Delete</Button.Delete></RespTable.Column>
                                 </RespTable.Row>
                             )
-                        })}
+                        }):<RespTable.Row>
+                            <RespTable.Column data-testid="no-results">No recipes were found</RespTable.Column>
+                            </RespTable.Row>}
                     </RespTable.Body>
                 </RespTable.Table>
             </Center>

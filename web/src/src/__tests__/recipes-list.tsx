@@ -2,48 +2,41 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import { render, fireEvent, screen, waitForElement, waitForElementToBeRemoved } from '@testing-library/react'
 import App from '../App'
-import { act } from 'react-dom/test-utils'
-import {RecipeService} from '../recipe-service/recipe-service'
+import { RecipeService } from '../recipe-service/recipe-service'
+
+jest.mock('../recipe-service/recipe-service');
 
 const data = [{
     id: 2,
     description: "desc",
     name: "pizza",
-    ingredients: [{name:"cheese"}]
+    ingredients: [{ name: "cheese" }]
 }];
 
 test('must not list recipes when no recipes was received from api', async () => {
-    jest.spyOn(window, 'alert').mockImplementation(() => { });
+    RecipeService.list.mockReturnValue([]);
     
-        jest.spyOn(RecipeService, 'list').mockImplementationOnce(() => Promise.resolve([]))
-        await act(async () => {render(<App />)}) 
-
-    expect(screen.queryByText('pizza')).toBe(null);
+    render(<App />)
+    
+    expect(await waitForElement(() => screen.queryByTestId('no-results'))).toBeInTheDocument()
 });
 
 
 test('must list recipes when recipes was received from api', async () => {
+    
+    RecipeService.list.mockReturnValue(data);
 
-    jest.spyOn(RecipeService, 'list').mockImplementation(() => Promise.resolve(data))
-
-    await act(async () => {render(<App />)}) 
+    render(<App />)
 
     expect(await waitForElement(() => screen.getByText('pizza'))).toBeInTheDocument()
 });
 
 test('must delete a recipe', async () => {
-    const data = [{
-        id: 1,
-        name: "pizza",
-        description: "Italian food",
-        ingredients: []
-    }];
     const mockDelete = jest.fn().mockReturnValue(Promise.resolve(true))
+    RecipeService.list.mockReturnValue(data);
+    RecipeService.remove.mockImplementationOnce(mockDelete);
 
-    jest.spyOn(RecipeService, 'list').mockImplementationOnce(() => Promise.resolve(data))
-    jest.spyOn(RecipeService, 'remove').mockImplementationOnce(mockDelete)
-
-    await act(async () => {render(<App />)}) 
+    render(<App />)
     expect(await waitForElement(() => screen.getByText('Delete'))).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Delete'))

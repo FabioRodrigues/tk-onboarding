@@ -3,7 +3,6 @@ import React from 'react'
 import { fireEvent, screen, waitForElement, render, cleanup } from '@testing-library/react'
 import App from '../App'
 import {RecipeService} from '../recipe-service/recipe-service'
-import { act } from 'react-dom/test-utils'
 const recipe = {
   name: "pizza",
   id: 1,
@@ -11,21 +10,30 @@ const recipe = {
   ingredients: [{ name: "cheese" }]
 }
 
+jest.mock('../recipe-service/recipe-service');
 
-test('must add ingredients', async () => {
-  jest.spyOn(RecipeService, 'list').mockImplementation(() => Promise.resolve([recipe]))
-  jest.spyOn(RecipeService, 'save').mockImplementation(() => Promise.resolve({}))
+
+
+test('must create a recipe', async () => {
+  RecipeService.list.mockReturnValue([]);
   
-  await act(async () => {render(<App />) })
-  let newRecipe = recipe;
-  newRecipe.name="kebab";
-  newRecipe.description="turkish";
-  await fireEvent.click(screen.queryByTestId("new-button"));
-  await fireEvent.change(screen.getByTestId("name"), {target:{value:newRecipe.name}})
-  await fireEvent.change(screen.getByTestId("description"), {target:{value:newRecipe.description}})
+  const mockSave = jest.fn().mockReturnValue({})
+  RecipeService.save.mockImplementationOnce(mockSave);
+  
+  render(<App />)
+  
+  await waitForElement(() => screen.queryByTestId('no-results'))
+  await fireEvent.click(screen.getByTestId("new-button"));
+  await waitForElement(() => screen.queryByTestId('save-button'))
+  await fireEvent.change(screen.getByTestId("name"), {target:{value:recipe.name}})
+  await fireEvent.change(screen.getByTestId("description"), {target:{value:recipe.description}})
+  await fireEvent.change(screen.getByTestId("ingredient-add"), {target:{value:recipe.ingredients[0].name}})
+  await fireEvent.keyDown(screen.getByTestId("ingredient-add"),{ key: 'Enter', code: 'Enter' })
   await fireEvent.click(screen.getByTestId("save-button"))
-  
-  jest.spyOn(RecipeService, 'list').mockImplementation(() => Promise.resolve([newRecipe]))
-
-  expect(await waitForElement(() => screen.queryByText(newRecipe.name))).toBeInTheDocument()
+  expect(mockSave).toHaveBeenCalledWith({
+    name: recipe.name,
+    description: recipe.description,
+    ingredients: recipe.ingredients
+  })
+  await waitForElement(() => screen.queryByTestId('no-results'))
 });

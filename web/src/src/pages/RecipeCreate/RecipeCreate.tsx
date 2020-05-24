@@ -72,7 +72,13 @@ function RecipeCreate(req: any) {
     useEffect(() => {
         const fetchRecipe = async (id: number, isEdit: boolean) => {
             try {
-                let recipe = await RecipeService.get(id)
+                if(isEdit) {
+                    setrecipeName('');
+                    setrecipeDescription('');
+                    setIngredients([]);
+                }
+
+                const recipe = await RecipeService.get(id);
                 if (recipe) {
                     setrecipeName(recipe.name);
                     setrecipeDescription(recipe.description);
@@ -191,9 +197,13 @@ function RecipeCreate(req: any) {
                         <IngredientItem>
                             <FormLabel>
                                 Name:
-                                        <TextBox type="text" name="name" value={ingredientName}
-                                    onKeyDown={keyDownIngredient}
-                                    onChange={(e) => setIngredientName(e.target.value)} placeholder="Ingredient name ( type <ENTER> to add )" />
+                                        <TextBox 
+                                        type="text" 
+                                        name="name"
+                                        data-testid='ingredient-add'
+                                        value={ingredientName}
+                                        onKeyDown={keyDownIngredient}
+                                        onChange={(e) => setIngredientName(e.target.value)} placeholder="Ingredient name ( type <ENTER> to add )" />
                             </FormLabel>
                         </IngredientItem>
                     </StyledFlex.Row>
