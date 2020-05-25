@@ -70,29 +70,26 @@ function RecipeCreate(req: any) {
     const history = useHistory()
 
     useEffect(() => {
-        const fetchRecipe = async (id: number, isEdit: boolean) => {
-            try {
-                if(isEdit) {
-                    setrecipeName('');
-                    setrecipeDescription('');
-                    setIngredients([]);
-                }
+        if(isEdit) fetchRecipe(id, isEdit);
+    }, []);
 
-                const recipe = await RecipeService.get(id);
-                if (recipe) {
-                    setrecipeName(recipe.name);
-                    setrecipeDescription(recipe.description);
-                    setIngredients(recipe.ingredients.map((item) => item.name));
-                }
-            } catch (err) {
-                //just to simplify error treatment
-                console.log(err);
+    const fetchRecipe = async (id: number, isEdit: boolean) => {
+        try {
+            if(!isEdit) return;
+
+            const recipe = await RecipeService.get(id);
+            if (recipe) {
+                setrecipeName(recipe.name);
+                setrecipeDescription(recipe.description);
+                setIngredients(recipe.ingredients.map((item) => item.name));
+                
             }
+        } catch (err) {
+            //just to simplify error treatment
+            console.log(err);
+        }
 
-        };
-
-        fetchRecipe(id, isEdit);
-    }, [id, isEdit]);
+    }
 
     const addIngredient = () => {
         if (ingredientName === "") return;
@@ -179,7 +176,7 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="name">
                                 Name:
                             </FormLabel>
-                            <TextBox data-testid="name" type="text" id="name" value={recipeName || ''} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
+                            <TextBox data-testid="name" type="text" id="name" value={recipeName} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                     <StyledFlex.Item>
@@ -187,7 +184,7 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="description">
                                 Description:
                             </FormLabel>
-                            <TextBox data-testid="description" type="text" id="description" value={recipeDescription || ''} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
+                            <TextBox data-testid="description" type="text" id="description" value={recipeDescription} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                 </StyledFlex.Row>

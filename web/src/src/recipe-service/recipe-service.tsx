@@ -52,7 +52,7 @@ const save = async(payload: any): Promise<any> =>{
 }
 
 const update = async(id: any, payload: any): Promise<any> =>{
-    let result = await axios.patch(`${ApiConfigs.BaseUrl}/recipes/${id}`, payload);
+    let result = await axios.patch(`${ApiConfigs.BaseUrl}/recipes/${id}/`, payload);
     if(result.status < 200 || result.status >= 300){
         handleError(result.data);
         return Promise.reject();
