@@ -56,8 +56,7 @@ const LinkButton = styled.button`
 
 function RecipeCreate(req: any) {
     const id = req.match.params.id;
-
-    const [isEdit] = useState(id !== null && id !== undefined)
+    const isEdit = id !== null && id !== undefined;
     const [recipeId] = useState(id)
     const [editEnabled, setEditEnabled] = useState(false)
 

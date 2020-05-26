@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import React from 'react'
-import { fireEvent, screen, waitForElement, render, cleanup } from '@testing-library/react'
+import { fireEvent, screen, waitForElement, render, wait } from '@testing-library/react'
 import App from '../App'
 import {RecipeService} from '../recipe-service/recipe-service'
 const recipe = {
@@ -23,17 +23,16 @@ test('must create a recipe', async () => {
   render(<App />)
   
   await waitForElement(() => screen.queryByTestId('no-results'))
-  await fireEvent.click(screen.getByTestId("new-button"));
+  fireEvent.click(screen.getByTestId("new-button"));
   await waitForElement(() => screen.queryByTestId('save-button'))
-  await fireEvent.change(screen.getByTestId("name"), {target:{value:recipe.name}})
-  await fireEvent.change(screen.getByTestId("description"), {target:{value:recipe.description}})
-  await fireEvent.change(screen.getByTestId("ingredient-add"), {target:{value:recipe.ingredients[0].name}})
-  await fireEvent.keyDown(screen.getByTestId("ingredient-add"),{ key: 'Enter', code: 'Enter' })
-  await fireEvent.click(screen.getByTestId("save-button"))
+  fireEvent.change(screen.getByTestId("name"), {target:{value:recipe.name}})
+  fireEvent.change(screen.getByTestId("description"), {target:{value:recipe.description}})
+  fireEvent.change(screen.getByTestId("ingredient-add"), {target:{value:recipe.ingredients[0].name}})
+  fireEvent.keyDown(screen.getByTestId("ingredient-add"),{ key: 'Enter', code: 'Enter' })
+  await wait(() => fireEvent.click(screen.getByTestId("save-button")))
   expect(mockSave).toHaveBeenCalledWith({
     name: recipe.name,
     description: recipe.description,
     ingredients: recipe.ingredients
   })
-  await waitForElement(() => screen.queryByTestId('no-results'))
 });

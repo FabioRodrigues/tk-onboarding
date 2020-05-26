@@ -47,8 +47,8 @@ test('must edit a recipe', async () => {
   let newRecipeName = 'pizza2'
   let newDescription = 'description 2'
 
-  await fireEvent.change(name, { target: { value: newRecipeName } });
-  await fireEvent.change(description, { target: { value: newDescription} });
+  fireEvent.change(name, { target: { value: newRecipeName } });
+  fireEvent.change(description, { target: { value: newDescription} });
 
   await wait(() => fireEvent.click(screen.getByTestId("save-button")));
 
