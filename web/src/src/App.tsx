@@ -6,29 +6,36 @@ import {
 } from 'react-router-dom';
 import RecipesList from './pages/RecipesList/RecipesList'
 import RecipeCreate from './pages/RecipeCreate/RecipeCreate'
-import {StyledFlex } from './styled/Flex/Flex'
-
 import styled from 'styled-components'
 
-const CardMain = styled(StyledFlex.Card)`
-  margin-top: 50px;
-  padding:10px 0;
+const Card = styled.div`
+    border-radius: 5px;
+    width: 50vw;
+    min-height: 60vh;
+    min-width: 80vw;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    margin-top: 50px;
+    padding:10px 0;    
+`
+
+const Container = styled.div`
+  margin-left: 10%;
+  margin-right: 10%;
 `
 
 function App() {
   return (
     <Router>
-        <StyledFlex.Row>
-          <StyledFlex.Item>
-            <CardMain>
+      <Container>
+            <Card>
             <Switch>
               <Route exact path="/" component={RecipesList} />
               <Route path="/recipe-detail/:id" component={RecipeCreate} />
               <Route path="/recipe-create" component={RecipeCreate} />
             </Switch>
-            </CardMain>
-          </StyledFlex.Item>
-        </StyledFlex.Row>
+            </Card>
+      </Container>
     </Router >
   );
 }

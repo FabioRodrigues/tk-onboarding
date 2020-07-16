@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { Link, useHistory, Redirect } from 'react-router-dom'
-import { StyledFlex } from '../../styled/Flex/Flex'
-import { Button } from '../../styled/Button/Button'
+import { Link, useHistory } from 'react-router-dom'
+import { StyledFlex, Button } from '../../styled'
 import styled from 'styled-components'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import {ApiConfigs} from '../../config/ApiConfigs'
+import { RecipeService } from '../../recipe-service/recipe-service'
 
 const ContainerIngredients = styled.div`
     border: none;
@@ -56,26 +54,10 @@ const LinkButton = styled.button`
     outline: none;
 `
 
-interface RecipePayload {
-    id: number,
-    name: string,
-    description: string,
-    ingredients: Array<RecipePayloadIngredient>
-}
-
-interface RecipePayloadIngredient {
-    name: string
-}
-
-interface Response {
-    data: RecipePayload
-}
-
 function RecipeCreate(req: any) {
     const id = req.match.params.id;
-
-    const [isEdit, setIsEdit] = useState(id !== null && id !== undefined)
-    const [recipeId, setRecipeId] = useState(id)
+    const isEdit = id !== null && id !== undefined;
+    const [recipeId] = useState(id)
     const [editEnabled, setEditEnabled] = useState(false)
 
 
@@ -87,90 +69,103 @@ function RecipeCreate(req: any) {
     const history = useHistory()
 
     useEffect(() => {
-        const fetchRecipe = () => {
-            axios.get(`${ApiConfigs.BaseUrl}/recipes/${id}`)
-                .then((res: Response) => {
-                    setrecipeName(res.data.name);
-                    setrecipeDescription(res.data.description);
-                    setIngredients(res.data.ingredients.map((item) => item.name));
-                })
-                .catch((err) => console.log(err));
-        };
-        if (isEdit) fetchRecipe();
-    }, [])
+        if(isEdit) fetchRecipe(id, isEdit);
+    }, []);
 
-    const actions = {
-        addIngredient: () => {
-            if (ingredientName === "") return;
+    const fetchRecipe = async (id: number, isEdit: boolean) => {
+        try {
+            if(!isEdit) return;
 
-            setIngredients([...ingredients, ingredientName]);
-            setIngredientName("");
-        },
-        submit: (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            let payload = {
-                name: recipeName,
-                description: recipeDescription,
-                ingredients: ingredients.filter((i) => i !== "").map((i) => { return { name: i } })
+            const recipe = await RecipeService.get(id);
+            if (recipe) {
+                setrecipeName(recipe.name);
+                setrecipeDescription(recipe.description);
+                setIngredients(recipe.ingredients.map((item) => item.name));
+                
             }
+        } catch (err) {
+            //just to simplify error treatment
+            console.log(err);
+        }
+
+    }
+
+    const addIngredient = () => {
+        if (ingredientName === "") return;
+
+        setIngredients([...ingredients, ingredientName]);
+        setIngredientName("");
+    };
+
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        let payload = {
+            name: recipeName,
+            description: recipeDescription,
+            ingredients: ingredients.map((i) => { return { name: i } })
+        }
+
+        try {
 
             if (isEdit) {
-                actions.edit(payload);
+                edit(recipeId, payload);
                 return;
             }
 
-            actions.create(payload);
-        },
-        create: (payload: any) => {
-            axios.post(`${ApiConfigs.BaseUrl}/recipes`, payload)
-                .then(() => {
-                    history.push('/');
-                }).catch(actions.handleError);
-        },
-        edit: (payload: any) => {
-            axios.patch(`${ApiConfigs.BaseUrl}/recipes/${recipeId}`, payload)
-                .then(() => {
-                    history.push('/');
-                }).catch(actions.handleError);
-        },
-        toggleEditable: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            e.preventDefault();
-            setEditEnabled(!editEnabled);
-        },        
-        keyDownIngredient: (e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                actions.addIngredient();
-                return false;
-            }
-        },
-        deleteIngredient: (index: any) => {
-            setIngredients(ingredients.filter((_, i) =>  i !== index))
-        },
-        handleError: (err: any) => {
-            alert('failed to fetch or save data. Please see console for details.')
+            create(payload);
+        } catch (err) {
+            //just to simplify error treatment
             console.log(err);
         }
     }
+    
+    const create = async (payload: any) => {
+        let result = await RecipeService.save(payload)
+        if (result) history.push('/');
+    }
+
+    const edit = async (recipeId: any, payload: any) => {
+        let result = await RecipeService.update(recipeId, payload)
+        if (result) history.push('/');
+    }
+
+
+    const toggleEditable = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        setEditEnabled(!editEnabled);
+    }
+
+    const keyDownIngredient = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addIngredient();
+            return false;
+        }
+    }
+
+    const deleteIngredient = (index: any) => {
+        setIngredients(ingredients.filter((_, i) => i !== index))
+    }
+
 
     return (
         <StyledFlex.Container>
-            <form onSubmit={actions.submit}>
+            <form onSubmit={submit}>
                 <StyledFlex.Row>
 
                     {
                         (!isEdit)
                             ? <h2> New recipe </h2>
-                            :   (<div>
-                                        <h2>Recipe
+                            : (<div>
+                                <h2>Recipe
                                             {
-                                                (!editEnabled)
-                                                ? <LinkButton onClick={actions.toggleEditable} data-testid="edit">( edit )</LinkButton >
-                                                : <LinkButton onClick={actions.toggleEditable} data-testid="lock">( lock )</LinkButton > 
-                                            }
-                                            </h2>
-                                        
-                                </div>)
+                                        (!editEnabled)
+                                            ? <LinkButton onClick={toggleEditable} data-testid="edit">( edit )</LinkButton >
+                                            : <LinkButton onClick={toggleEditable} data-testid="lock">( lock )</LinkButton >
+                                    }
+                                </h2>
+
+                            </div>)
                     }
                 </StyledFlex.Row>
                 <Divider />
@@ -180,7 +175,7 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="name">
                                 Name:
                             </FormLabel>
-                            <TextBox data-testid="name" type="text" id="name" value={recipeName || ''} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
+                            <TextBox data-testid="name" type="text" id="name" value={recipeName} placeholder="Recipe name" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeName(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                     <StyledFlex.Item>
@@ -188,22 +183,26 @@ function RecipeCreate(req: any) {
                             <FormLabel htmlFor="description">
                                 Description:
                             </FormLabel>
-                            <TextBox data-testid="description" type="text" id="description" value={recipeDescription || ''} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
+                            <TextBox data-testid="description" type="text" id="description" value={recipeDescription} placeholder="Recipe description" readOnly={isEdit && !editEnabled} required onChange={(e) => setrecipeDescription(e.target.value)} />
                         </div>
                     </StyledFlex.Item>
                 </StyledFlex.Row>
                 {
                     (!isEdit || editEnabled) &&
-                        <StyledFlex.Row>
-                            <IngredientItem>
-                                <FormLabel>
-                                    Name:
-                                        <TextBox type="text" name="name" value={ingredientName}
-                                        onKeyDown={actions.keyDownIngredient}
+                    <StyledFlex.Row>
+                        <IngredientItem>
+                            <FormLabel>
+                                Name:
+                                        <TextBox 
+                                        type="text" 
+                                        name="name"
+                                        data-testid='ingredient-add'
+                                        value={ingredientName}
+                                        onKeyDown={keyDownIngredient}
                                         onChange={(e) => setIngredientName(e.target.value)} placeholder="Ingredient name ( type <ENTER> to add )" />
-                                </FormLabel>
-                            </IngredientItem>
-                        </StyledFlex.Row>
+                            </FormLabel>
+                        </IngredientItem>
+                    </StyledFlex.Row>
                 }
 
 
@@ -214,8 +213,8 @@ function RecipeCreate(req: any) {
                                 <StyledFlex.Item>
                                     <List>
                                         {ingredients.map((item, index) => (
-                                            <ListItem key={index}>- {item} {(!isEdit || editEnabled)&&
-                                                <LinkButton data-testid={`remove-ingredient-${index}`} onClick={() => actions.deleteIngredient(index)}>
+                                            <ListItem key={index}>- {item} {(!isEdit || editEnabled) &&
+                                                <LinkButton data-testid={`remove-ingredient-${index}`} onClick={() => deleteIngredient(index)}>
                                                     <FontAwesomeIcon icon={faTrash} />
                                                 </LinkButton>
                                             }
@@ -234,8 +233,8 @@ function RecipeCreate(req: any) {
                             <Button.Secondary>Back</Button.Secondary>
                         </Link>
                         {
-                            (!isEdit || editEnabled)&&
-                                <Button.Primary data-testid="save-button" type="submit" >Save</Button.Primary>
+                            (!isEdit || editEnabled) &&
+                            <Button.Primary data-testid="save-button" type="submit" >Save</Button.Primary>
                         }
                     </StyledFlex.Item>
                 </StyledFlex.Row>

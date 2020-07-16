@@ -1,9 +1,8 @@
 import '@testing-library/jest-dom'
-import axios from 'axios'
 import React from 'react'
-import { fireEvent, screen, waitForElement, render, cleanup } from '@testing-library/react'
+import { fireEvent, screen, waitForElement, render, wait } from '@testing-library/react'
 import App from '../App'
-
+import {RecipeService} from '../recipe-service/recipe-service'
 const recipe = {
   name: "pizza",
   id: 1,
@@ -11,39 +10,29 @@ const recipe = {
   ingredients: [{ name: "cheese" }]
 }
 
-const originalError = console.error
-beforeAll(() => {
-  jest.spyOn(window, 'alert').mockImplementation(() => { });
-  console.error = (...args) => {
-    if (/Warning.*not wrapped in act/.test(args[0])) {
-      return
-    }
-    originalError.call(console, ...args)
-  }
-})
+jest.mock('../recipe-service/recipe-service');
 
-afterAll(() => {
-  console.error = originalError
-})
 
-afterEach(() => {
-  cleanup()
-})
 
-test('must add ingredients', async () => {
-  jest.spyOn(axios, 'get').mockImplementation(() => Promise.resolve({ data: [recipe] }))
-  jest.spyOn(axios, 'post').mockImplementation(() => Promise.resolve({ data: {} }))
-  render(<App />)
-  let newRecipe = recipe;
-  newRecipe.name="kebab";
-  newRecipe.description="turkish";
-  await fireEvent.click(screen.queryByTestId("new-button"));
-  screen.debug(document.body)
-  await fireEvent.change(screen.getByTestId("name"), {target:{value:newRecipe.name}})
-  await fireEvent.change(screen.getByTestId("description"), {target:{value:newRecipe.description}})
-  await fireEvent.click(screen.getByTestId("save-button"))
+test('must create a recipe', async () => {
+  RecipeService.list.mockReturnValue([]);
   
-  jest.spyOn(axios, 'get').mockImplementation(() => Promise.resolve({ data: [newRecipe] }))
-
-  expect(await waitForElement(() => screen.queryByText(newRecipe.name))).toBeInTheDocument()
+  const mockSave = jest.fn().mockReturnValue({})
+  RecipeService.save.mockImplementationOnce(mockSave);
+  
+  render(<App />)
+  
+  await waitForElement(() => screen.queryByTestId('no-results'))
+  fireEvent.click(screen.getByTestId("new-button"));
+  await waitForElement(() => screen.queryByTestId('save-button'))
+  fireEvent.change(screen.getByTestId("name"), {target:{value:recipe.name}})
+  fireEvent.change(screen.getByTestId("description"), {target:{value:recipe.description}})
+  fireEvent.change(screen.getByTestId("ingredient-add"), {target:{value:recipe.ingredients[0].name}})
+  fireEvent.keyDown(screen.getByTestId("ingredient-add"),{ key: 'Enter', code: 'Enter' })
+  await wait(() => fireEvent.click(screen.getByTestId("save-button")))
+  expect(mockSave).toHaveBeenCalledWith({
+    name: recipe.name,
+    description: recipe.description,
+    ingredients: recipe.ingredients
+  })
 });
